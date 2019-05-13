@@ -36,9 +36,6 @@ def test_data(testFile, testLabel):
         embed = []
         for word in line:
             embedding_vector = np.array(embeddings_index.get(word, embeddings_index.get("#")))
-            if normalise:
-                embedding_vector[0]/=35
-                embedding_vector[1]/=8
             embed.append(list(embedding_vector))
         embedding_matrix.append(embed)
     InputLines = np.array(embedding_matrix)
@@ -63,7 +60,8 @@ testX, testY = test_data(testFile, testLabel)
 loss, accuracy = train_model.evaluate(testX, testY, verbose=0)
 
 preds = train_model.predict(testX)
-print(preds[5])
+for i in range(N):
+    print(preds[0][i], testY[0][i], preds[5][i], testY[5][i])
 
 
 #for i in range(len(preds)):

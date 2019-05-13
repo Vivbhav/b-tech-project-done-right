@@ -56,9 +56,6 @@ def data_generator(batch_size,inputfile,outputfile,N):
             embed = []
             for word in line:
                 embedding_vector = np.array(embeddings_index.get(word, embeddings_index.get("#")))
-                if normalise:
-                    embedding_vector[0]/=35
-                    embedding_vector[1]/=8
                 embed.append(list(embedding_vector))
             embedding_matrix.append(embed)
         InputLines = np.array(embedding_matrix)
@@ -81,11 +78,6 @@ def data_generator(batch_size,inputfile,outputfile,N):
         #print("input", InputLines.shape)
         yield InputLines, labels
 
-def gen():
-    one = [0,1]
-    zero= [1,0]
-    a = [[zero,one,zero,one,zero,one,zero,one]*64]
-
 def define_model():
       # define model
       model = Sequential()
@@ -98,21 +90,21 @@ def define_model():
       """
       if use_lstm:
         model.add(LSTM(100, batch_input_shape=(None, N, M),
-            return_sequences=True, use_bias=False))
+            return_sequences=True,use_bias=False))
       else:
         model.add(Flatten(input_shape=(N,M)))
       #model.add(Dropout(0.3))
-      model.add(Dense(128, use_bias=False))
-      model.add(Dense(32, use_bias = False))
-      model.add(Dense(2, activation='softmax', use_bias = False))
+      model.add(Dense(128, activation='relu',use_bias=False))
+      model.add(Dense(32, activation='relu',use_bias=False))
+      model.add(Dense(2, activation='softmax',use_bias=False))
       #model.add(Dense(N, activation='sigmoid', kernel_regularizer=regularizers.l2(0.00), activity_regularizer=regularizers.l1(0.01)))
       return model
 
 def main():
     model = define_model()
-    weights = [1,125]
+    weights = [50,1]
     # compile the model
-    adam = optimizers.Adam(lr=3e-01)
+    adam = optimizers.Adam(lr=5e-04)
     model.compile(optimizer=adam, loss = 'categorical_crossentropy', metrics=['accuracy'])
     # summarize the model
     print(model.summary())
