@@ -25,11 +25,8 @@ def scrape(textinput):
 				pass
 			else:
 				line1.append(line)
-		print(line1)
 		return line1
 	except KeyError:
 		print("Information for such a topic doesn't exist.")
 		exit(1)
 
-#output = scrape('MS Dhoni')
-#print(output)

@@ -1,5 +1,7 @@
 input.for.test/*
 models.for.test/*
 output_questions_LSTM-attn.pt.txt.prob.txt
+output_questions_QG-Net.pt.txt.prob.txt
 qg_reproduce_LS.sh
-
+.*.swp
+__pycache__/*

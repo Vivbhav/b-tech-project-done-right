@@ -76,32 +76,37 @@ def main():
         input_field.pack(fill=X, side=TOP)
         
         #submit button
-        display(frame=frame, label="", buttons_list=["Submit"], quit=True, back=True)
+        option = display(frame=frame, label="", buttons_list=["Submit"], quit=True, back=True)
+
+        if option != 0 :
+            return 0
 
         text = [input_field.get()]
         #split . if only ner
 
-        #print(text)
         frame.destroy()
-        filename="input.txt"
+        filename="input.for.test/new_input.txt"
 
         if(scrape): 
-        	filename = text[0]
-        	file_exists = os.path.isfile(filename)
-        	if not file_exists:
-        		frame = Frame()
-        		frame.pack(anchor=CENTER)
-        		Label(frame, text="Fetching data",font='none 12 bold').pack()
-        		text = wiki.scrape(text[0])
-        		frame.destroy()
-        	#preprocess
+            filename = "input.for.test/"+text[0].replace(" ","_") + ".txt"
+            file_exists = os.path.isfile(filename)
+            if not file_exists:
+                frame = Frame()
+                frame.pack(anchor=CENTER)
+                Label(frame, text="Fetching data",font='none 12\
+                        bold').pack()
+                frame.update()
+                text = wiki.scrape(text[0])
+                frame.destroy()
+        #preprocess
         if not file_exists:
-        	frame = Frame()
-        	frame.pack(anchor=CENTER)
-        	Label(frame, text="Preprocessing", bg='black', fg='white', font='none 12 \
-        	        bold').pack(fill=X, side=TOP)
-        	script_tag_answer.preprocess(text, filename)
-        	frame.destroy()
+            frame = Frame()
+            frame.pack(anchor=CENTER)
+            Label(frame, text="Preprocessing", bg='black', fg='white', font='none 12 \
+                    bold').pack(fill=X, side=TOP)
+            frame.update()
+            script_tag_answer.preprocess(text, filename)
+            frame.destroy()
 
         option = display(label="Choose Question Type", buttons_list=["Wh Question"\
                     , "Fill in the blanks"], quit=True, back=True)
@@ -109,15 +114,12 @@ def main():
         if option < 0 or option > 1:
             return 0
         if option == 0:
-            #generate_question(file)
-            os.system("cd QG-Net/test && ls")
-            os.system("bash qg_reproduce_LS.sh ../../../"+filename)
+            os.system("bash qg_reproduce_LS.sh "+filename)
             pass
         elif option == 1:
             generate_fill_in_the_blanks(filename)
-        tk.destroy()
-        return 0 
     tk.destroy()
+    return 0
 
 
 if __name__ == '__main__':

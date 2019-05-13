@@ -6,7 +6,7 @@ from nltk.tokenize import word_tokenize
 import nltk
 import json
 
-st = StanfordNERTagger('classifiers/english.muc.7class.distsim.crf.ser.gz','stanford-ner.jar',encoding='utf-8')
+st = StanfordNERTagger('../../stanford-ner-2018-02-27/classifiers/english.muc.7class.distsim.crf.ser.gz','../../stanford-ner-2018-02-27/stanford-ner.jar',encoding='utf-8')
 
 def tag_answers(fw, ner, pos, tag1):
     words = []
@@ -51,6 +51,5 @@ def preprocess(lines, filename):
 	    tag_answers(fw, t, t1, 'MONEY')
 	    tag_answers(fw, t, t1, 'PERSON')
 	    tag_answers(fw, t, t1, 'PERCENT')
-	    fw.write("\n")
 	fw.close()
 	#fr.close()
