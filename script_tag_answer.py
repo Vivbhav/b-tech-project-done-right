@@ -33,7 +33,8 @@ def tag_answers(fw, ner, pos, tag1):
         tag = "|" + y + "|" + pos[i][1] + "|" + ner[i][1] + "|"+z
         words.append(ner[i][0].lower()+tag)
         i+=1
-    if len(words):
+    if len(words) and not a:
+        # non-empty with atleast one 'A' tag
     	fw.write(" ".join(words)+"\n")
 
 def preprocess(lines, filename):

@@ -19,7 +19,6 @@ def scrape(textinput):
 		#print(page['extract'])
 		output = page['extract']
 		lines = output.split('\n')
-		fw = open("input.txt", "w")
 		for line in lines:
 			if '==' in line or line == '' or len(line) < 75:
 				pass

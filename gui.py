@@ -8,19 +8,13 @@ tk = Tk()
 def generate_fill_in_the_blanks(filename):
     fr= open(filename, "r")
     for line in fr:
-    	count = 0
-    	line = [word.split("|") for word in line.strip().split(" ")]
     	for i in line:
-    		if i[-1] == "A":
-    			count += 1
-    	if count:
-    		for i in line:
-    			if i[-1] == 'A':
-    		    		print("_"*8,end=" ")
-    		    		print("("+i[0]+")",end=" ")
-    			else:
-    		    		print(i[0],end=" ")
-    		print("\n")
+    		if i[-1] == 'A':
+    	    		print("_"*8,end=" ")
+    	    		print("("+i[0]+")",end=" ")
+    		else:
+    	    		print(i[0],end=" ")
+    	print("\n")
 
 def display(frame=None, geometry = "250x200", label="", buttons_list=[], w=26, back = False, quit = False):
     if not (len(buttons_list) or back or quit):
