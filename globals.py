@@ -1,6 +1,6 @@
-use_glove = False
-use_lstm = False
-N=200 # each sentence has max N words
+use_glove = True
+use_lstm = True
+N=8 # each sentence has max N words
 normalise = True
 
 

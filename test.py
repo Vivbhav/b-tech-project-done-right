@@ -19,7 +19,7 @@ from keras.models import load_model
 import numpy as np
 
 train_model = load_model(modelname)
-with open(Glovedict, "r") as gr:
+with open(embedding_dict, "r") as gr:
     embeddings_index = json.load(gr)
 def test_data(testFile, testLabel):
     input_f = open(testFile, encoding="utf8" )
@@ -50,7 +50,12 @@ def test_data(testFile, testLabel):
       if lambai2 != N:
         label += [0]*(N-lambai2)
       f_label.append(label)
-    labels = np.array(f_label)
+    one = [0,1]
+    zero = [1,0]
+    label = []
+    for i in f_label:
+        label.append([zero if not j else one for j in i])
+    labels = np.array(label)
     return InputLines, labels
 
 
@@ -59,31 +64,12 @@ loss, accuracy = train_model.evaluate(testX, testY, verbose=0)
 
 preds = train_model.predict(testX)
 print(preds[5])
-print(max(preds[5]))
 
-threshold = float(input())
-output=[]
-test=[]
-for pred in range(len(preds)):
-    output.append([])
-    test.append(list(testY[pred]))
-    for i in range(len(preds[pred])):
-        if preds[pred][i] > threshold:
-            output[-1].append(1)
-        else:
-            output[-1].append(0)
 
-testY=list(testY)
-
-for i in range(len(preds)):
-    print("pred**************************************************************************************************************")
-    print(output[i])
-    print(sum(preds[i]))
-    print(sum(output[i]))
-    print("test--------------------------------------------------------------------------------------------------------------")
-    print(test[i])
-    print(sum(test[i]))
-print(sum(preds[4]))
-print(sum(preds[5]))
+#for i in range(len(preds)):
+#    print("pred**************************************************************************************************************")
+#    print(preds[i])
+#    print("test--------------------------------------------------------------------------------------------------------------")
+#    print(testY[i])
 print('Accuracy: %f' % (accuracy*100))
 print('Loss: %f' % (loss*100))

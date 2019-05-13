@@ -70,11 +70,21 @@ def data_generator(batch_size,inputfile,outputfile,N):
           if lambai2 != N:
             label += [0]*(N-lambai2)
           f_label.append(label)
-        #f_label = [[0,1] if not i else [1,0] for i in f_label]
-        labels = np.array(f_label)
+        one = [0,1]
+        zero= [1,0]
+        label = []
+        for i in f_label:
+            label.append([zero if not j else one for j in i])
+        labels = np.array(label)
         #if counter ==1:
         #    print(labels.shape)
+        #print("input", InputLines.shape)
         yield InputLines, labels
+
+def gen():
+    one = [0,1]
+    zero= [1,0]
+    a = [[zero,one,zero,one,zero,one,zero,one]*64]
 
 def define_model():
       # define model
@@ -87,22 +97,23 @@ def define_model():
           bias_initializer=b, recurrent_initializer=r, kernel_initializer=k))
       """
       if use_lstm:
-        model.add(LSTM(N, batch_input_shape=(None, N, M), return_sequences=False))
+        model.add(LSTM(100, batch_input_shape=(None, N, M),
+            return_sequences=True, use_bias=False))
       else:
         model.add(Flatten(input_shape=(N,M)))
       #model.add(Dropout(0.3))
-      #model.add(Dense(N))#, activation='relu'))
-      model.add(Dense(N, activation='sigmoid', kernel_regularizer=regularizers.l2(0.01), activity_regularizer=regularizers.l1(0.01)))
+      model.add(Dense(128, use_bias=False))
+      model.add(Dense(32, use_bias = False))
+      model.add(Dense(2, activation='softmax', use_bias = False))
+      #model.add(Dense(N, activation='sigmoid', kernel_regularizer=regularizers.l2(0.00), activity_regularizer=regularizers.l1(0.01)))
       return model
 
 def main():
     model = define_model()
-    weights = {0:125,1:1}
-    for i in range(2,200):
-        weights[i] = 125
+    weights = [1,125]
     # compile the model
-    adam = optimizers.Adam(lr=4e-02)
-    model.compile(optimizer=adam, loss='binary_crossentropy', metrics=['accuracy'])
+    adam = optimizers.Adam(lr=3e-01)
+    model.compile(optimizer=adam, loss = 'categorical_crossentropy', metrics=['accuracy'])
     # summarize the model
     print(model.summary())
     checkpoint = ModelCheckpoint(modelname, monitor='loss', verbose=1, save_best_only=True, mode='min', period=1)
@@ -111,6 +122,7 @@ def main():
             outputfile=outputLabel, N=N)
     validation_generator = data_generator(batch_size=64,
             inputfile=inputValidationFile, outputfile=outputValidationLabel, N=N)
+    
     history = model.fit_generator(training_generator, validation_data=validation_generator,
             epochs=10, callbacks=[checkpoint],class_weight = weights,
             verbose=1,steps_per_epoch=9736//64,validation_steps=4868//64)
@@ -118,6 +130,7 @@ def main():
     
    # evaluate the model
     
+    """
     from keras.models import load_model
     train_model = load_model(modelname)
     
@@ -130,6 +143,7 @@ def main():
     plt.plot(history.history['val_loss'])
     plt.legend(['train','validation'])
     plt.show()
+    """
     
-if '__name__' == '__main__':
+if __name__ == '__main__':
     main()
