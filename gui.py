@@ -86,11 +86,23 @@ def main():
         filename="input.txt"
 
         if(scrape): 
-        	text = wiki.scrape(text[0])
+        	filename = text[0]
+        	file_exists = os.path.isfile(filename)
+        	if not file_exists:
+        		frame = Frame()
+        		frame.pack(anchor=CENTER)
+        		Label(frame, text="Fetching data",font='none 12 bold').pack()
+        		text = wiki.scrape(text[0])
+        		frame.destroy()
         	#preprocess
-        script_tag_answer.preprocess(text, filename)
+        if not file_exists:
+        	frame = Frame()
+        	frame.pack(anchor=CENTER)
+        	Label(frame, text="Preprocessing", bg='black', fg='white', font='none 12 \
+        	        bold').pack(fill=X, side=TOP)
+        	script_tag_answer.preprocess(text, filename)
+        	frame.destroy()
 
-        print("preprocessing done")
         option = display(label="Choose Question Type", buttons_list=["Wh Question"\
                     , "Fill in the blanks"], quit=True, back=True)
 
@@ -98,6 +110,8 @@ def main():
             return 0
         if option == 0:
             #generate_question(file)
+            os.system("cd QG-Net/test && ls")
+            os.system("bash qg_reproduce_LS.sh ../../../"+filename)
             pass
         elif option == 1:
             generate_fill_in_the_blanks(filename)
