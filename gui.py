@@ -7,14 +7,18 @@ import script_tag_answer
 tk = Tk()
 def generate_fill_in_the_blanks(filename):
     fr= open(filename, "r")
+    count = 1
     for line in fr:
-    	for i in line:
-    		if i[-1] == 'A':
-    	    		print("_"*8,end=" ")
-    	    		print("("+i[0]+")",end=" ")
-    		else:
-    	    		print(i[0],end=" ")
-    	print("\n")
+        print(count,")",end=" ")
+        for i in line.strip().split(" "):
+            j = i.strip().split("|")
+            if j[-1] == 'A':
+                print("_"*8,end=" ")
+                print("("+j[0]+")",end=" ")
+            else:
+                print(j[0],end=" ")
+        print("\n")
+        count += 1
 
 def display(frame=None, geometry = "250x200", label="", buttons_list=[], w=26, back = False, quit = False):
     if not (len(buttons_list) or back or quit):
@@ -81,6 +85,7 @@ def main():
         frame.destroy()
         filename="input.for.test/new_input.txt"
 
+        file_exists = False
         if(scrape): 
             filename = "input.for.test/"+text[0].replace(" ","_") + ".txt"
             file_exists = os.path.isfile(filename)

@@ -48,19 +48,6 @@ def data_generator(batch_size,inputfile,outputfile,N):
             output_l += [output_f.readline() for _ in range(batch_size-li)]
         embedding_matrix = []
         lines = []
-        for j in input_l:
-            i = j.strip()
-            lambai = len(i.split())
-            if lambai != N:
-                i += " #"*(N-lambai)
-            line = i.strip().split()[:N]
-            embed = []
-            for word in line:
-                embedding_vector = np.array(embeddings_index.get(word, embeddings_index.get("#")))
-                embed.append(list(embedding_vector))
-            lines.append(line)
-            embedding_matrix.append(embed)
-        InputLines = np.array(embedding_matrix)
         f_label = []
         for label in output_l:
           label = label.strip().split()
@@ -75,10 +62,27 @@ def data_generator(batch_size,inputfile,outputfile,N):
         for i in f_label:
             label.append([zero if not j else one for j in i])
         labels = np.array(label)
+        for j in input_l:
+            i = j.strip()
+            lambai = len(i.split())
+            if lambai != N:
+                i += " #"*(N-lambai)
+            line = i.strip().split()[:N]
+            #if counter == 1 and inputfile == inputFile:
+            #    print("--orig ", j)
+            #    print("--upda ", i)
+            #    print()
+            embed = []
+            for word in line:
+                embedding_vector = np.array(embeddings_index.get(word, embeddings_index.get("#")))
+                embed.append(list(embedding_vector))
+            lines.append(line)
+            embedding_matrix.append(embed)
+        InputLines = np.array(embedding_matrix)
         #if counter ==1 and inputfile == inputFile:
         #    print("input", InputLines.shape)
         #    print("label", labels.shape)
-        #    for i in range(100):
+        #    for i in range(N):
         #        print(lines[0][i],"\t\t",InputLines[0][i],"\t\t", labels[0][i])
         yield InputLines, labels
 
@@ -106,9 +110,9 @@ def define_model():
 
 def main():
     model = define_model()
-    weights = [1,150]
+    weights = [1,35]
     # compile the model
-    adam = optimizers.Adam(lr=5e-04)
+    adam = optimizers.Adam(lr=1e-04)
     model.compile(optimizer=adam, loss = 'categorical_crossentropy', metrics=['accuracy'])
     # summarize the model
     print(model.summary())
@@ -120,7 +124,7 @@ def main():
             inputfile=inputValidationFile, outputfile=outputValidationLabel, N=N)
     
     history = model.fit_generator(training_generator, validation_data=validation_generator,
-            epochs=10, callbacks=[checkpoint],class_weight = weights,
+            epochs=10, callbacks=[checkpoint],#class_weight = weights,
             verbose=1,steps_per_epoch=9736//64,validation_steps=4868//64)
     #history = model.fit(trainX, trainY,validation_split = 0.4, epochs=30, batch_size=64, callbacks=[checkpoint], verbose=1)
     

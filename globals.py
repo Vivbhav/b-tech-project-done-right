@@ -1,6 +1,6 @@
 use_glove = False
-use_lstm = True
-N=600 # each sentence has max N words
+use_lstm = False
+N=100 # each sentence has max N words
 
 
 # define documents
