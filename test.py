@@ -28,11 +28,11 @@ def test_data(testFile, testLabel):
     output_l = output_f.readlines()
     embedding_matrix = []
     for j in input_l:
-        i = j.strip()[:N]
+        i = j.strip()
         lambai = len(i.split())
         if lambai != N:
             i += " #"*(N-lambai)
-        line = i.strip().split()
+        line = i.strip().split()[:N]
         embed = []
         for word in line:
             embedding_vector = np.array(embeddings_index.get(word, embeddings_index.get("#")))

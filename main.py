@@ -26,7 +26,7 @@ def data_generator(batch_size,inputfile,outputfile,N):
     input_f = open(inputfile, encoding="utf8" )
     output_f = open(outputfile, encoding="utf8" )
     # Initialize a counter
-    counter = 0
+    counter =m= 0
     while True:
         counter+=1
         input_l = []
@@ -47,16 +47,18 @@ def data_generator(batch_size,inputfile,outputfile,N):
             input_l += [input_f.readline() for _ in range(batch_size-li)]
             output_l += [output_f.readline() for _ in range(batch_size-li)]
         embedding_matrix = []
+        lines = []
         for j in input_l:
-            i = j.strip()[:N]
+            i = j.strip()
             lambai = len(i.split())
             if lambai != N:
                 i += " #"*(N-lambai)
-            line = i.strip().split()
+            line = i.strip().split()[:N]
             embed = []
             for word in line:
                 embedding_vector = np.array(embeddings_index.get(word, embeddings_index.get("#")))
                 embed.append(list(embedding_vector))
+            lines.append(line)
             embedding_matrix.append(embed)
         InputLines = np.array(embedding_matrix)
         f_label = []
@@ -73,9 +75,11 @@ def data_generator(batch_size,inputfile,outputfile,N):
         for i in f_label:
             label.append([zero if not j else one for j in i])
         labels = np.array(label)
-        #if counter ==1:
-        #    print(labels.shape)
-        #print("input", InputLines.shape)
+        #if counter ==1 and inputfile == inputFile:
+        #    print("input", InputLines.shape)
+        #    print("label", labels.shape)
+        #    for i in range(100):
+        #        print(lines[0][i],"\t\t",InputLines[0][i],"\t\t", labels[0][i])
         yield InputLines, labels
 
 def define_model():
@@ -102,7 +106,7 @@ def define_model():
 
 def main():
     model = define_model()
-    weights = [50,1]
+    weights = [1,150]
     # compile the model
     adam = optimizers.Adam(lr=5e-04)
     model.compile(optimizer=adam, loss = 'categorical_crossentropy', metrics=['accuracy'])
