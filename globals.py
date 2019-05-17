@@ -1,5 +1,5 @@
 use_glove = False
-use_lstm = False
+use_lstm = True
 N=100 # each sentence has max N words
 
 
