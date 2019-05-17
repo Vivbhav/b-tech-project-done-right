@@ -35,3 +35,4 @@ def antonym(words):
                     break
     return antword
 
+#answer is correct if synword.get(question) == text_entered_by_user
