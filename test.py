@@ -27,12 +27,14 @@ def test_data(testFile, testLabel):
     input_l = input_f.readlines()
     output_l = output_f.readlines()
     embedding_matrix = []
+    abc=[]
     for j in input_l:
         i = j.strip()
         lambai = len(i.split())
         if lambai != N:
             i += " #"*(N-lambai)
         line = i.strip().split()[:N]
+        abc.append(line)
         embed = []
         for word in line:
             embedding_vector = np.array(embeddings_index.get(word, embeddings_index.get("#")))
@@ -53,15 +55,16 @@ def test_data(testFile, testLabel):
     for i in f_label:
         label.append([zero if not j else one for j in i])
     labels = np.array(label)
-    return InputLines, labels
+    return abc,InputLines, labels
 
 
-testX, testY = test_data(testFile, testLabel)
+abc,testX, testY = test_data(testFile, testLabel)
 loss, accuracy = train_model.evaluate(testX, testY, verbose=0)
 
 preds = train_model.predict(testX)
+f = open("myfile","w")
 for i in range(N):
-    print(preds[0][i], testY[0][i], preds[5][i], testY[5][i])
+    f.write(str(abc[0][i])+"\t"+str(preds[0][i])+"\t"+str(testY[0][i])+"\n")
 
 
 #for i in range(len(preds)):

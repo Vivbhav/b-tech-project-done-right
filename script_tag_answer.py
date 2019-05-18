@@ -100,6 +100,8 @@ def preprocess(paragraphs, filename):
             for i,j in a.items():
                 ants.append(i)
                 ants_a.append(j)
+        if len(ans)+len(syns)+len(ants) > 10:
+            break
     fw.close()
     pickle.dump(syns,open(filename[:-4]+"_syn.txt","wb"))
     pickle.dump(ants,open(filename[:-4]+"_ant.txt","wb"))

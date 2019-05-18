@@ -44,7 +44,8 @@ def display_boxes(frame, geometry="1700x1010", label="", texts=[], w=26,
     i = 2
     boxes = []
     for t in texts:
-        Label(frame, text=t,font=txt,wraplength=1100).grid(sticky=W)
+        Label(frame, text=t,font=txt,wraplength=1100).grid(\
+                row =i, column =0, sticky=W)
         if not parallel:
             i += 1
         boxes.append(Entry(frame, width=w+2, bg='white',font=txt))
@@ -168,10 +169,7 @@ def main():
                 pickle.dump(answers,open(filename_a,"wb"))
                 frame.destroy()
             else:
-                try:
-                    answers = pickle.load(open(filename_a,'rb'))
-                except:
-                    pass
+                answers = pickle.load(open(filename_a,'rb'))
             state += 1
 
         if state == 2:
@@ -195,11 +193,18 @@ def main():
                 questions += pickle.load(open(filename_q[:-4]+"_ant.txt","rb"))
                 answers += pickle.load(open(filename_q[:-4]+"_ant_a.txt","rb"))
             elif option == 3:
+                answers = pickle.load(open(filename_a,'rb'))
+                answers+=answers
                 os.system("bash qg_reproduce_LS.sh {} \
                         {}".format(filename_q,output_filename))
                 questions = [q[:-1] for q in open(output_filename,"r").readlines()[1:]]
                 os.system("rm "+output_filename)
                 questions += generate_fill_in_the_blanks(filename_q)
+                questions += pickle.load(open(filename_q[:-4]+"_syn.txt","rb"))
+                answers += pickle.load(open(filename_q[:-4]+"_syn_a.txt","rb"))
+                questions += pickle.load(open(filename_q[:-4]+"_ant.txt","rb"))
+                answers += pickle.load(open(filename_q[:-4]+"_ant_a.txt","rb"))
+                pickle.dump(answers,open(filename_a,"wb"))
             elif option == -1:
                 state -= 2
             state += 1
@@ -274,11 +279,13 @@ def main():
                 return 0
             elif option == 0:
                 recvd_answers = [box.get() for box in boxes]
-                canvas.destroy()
+                #canvas.destroy()
                 frame.destroy()
                 mlb = MultiListBox(tk, (('No.', 5),('Question',90),('Your Answer', 15),\
                       ('Correct Answer', 15), ('Score', 15)),font=txt)
                 mlb.pack(expand=YES, fill=BOTH)
+                for _ in range(len(questions)-10):
+                    recvd_answers.append("")
                 score = 0
                 for i,l,j,k in zip(range(1,1+len(questions)),questions,answers, recvd_answers):
                     if k.lower() == j.lower():

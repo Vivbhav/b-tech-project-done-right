@@ -19,7 +19,7 @@ def synonym(words):
         else:
             definition = check.check_sim(word, "a")
         if definition:
-            synword[definition] = word[0] 
+            synword["Word that means: "+definition] = word[0] 
     return synword
 
 def antonym(words):
@@ -30,7 +30,7 @@ def antonym(words):
             for word in wordnet.synsets(word1[0]):
                 for l in word.lemmas():
                     if  l.antonyms() and count == 0:
-                        antword[l.antonyms()[0].name()] = word1[0]
+                        antword["Antonym of: "+l.antonyms()[0].name()] = word1[0]
                         count = 1
                     break
     return antword
