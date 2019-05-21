@@ -5,8 +5,6 @@ from numpy import array
 from numpy import asarray
 from numpy import zeros
 import numpy as np
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout
 from keras.layers import Flatten, InputLayer, Input
@@ -26,7 +24,7 @@ def data_generator(batch_size,inputfile,outputfile,N):
     input_f = open(inputfile, encoding="utf8" )
     output_f = open(outputfile, encoding="utf8" )
     # Initialize a counter
-    counter =m= 0
+    counter = 0
     while True:
         counter+=1
         input_l = []
@@ -47,7 +45,18 @@ def data_generator(batch_size,inputfile,outputfile,N):
             input_l += [input_f.readline() for _ in range(batch_size-li)]
             output_l += [output_f.readline() for _ in range(batch_size-li)]
         embedding_matrix = []
-        lines = []
+        for j in input_l:
+            i = j.strip()
+            lambai = len(i.split())
+            if lambai != N:
+                i += " #"*(N-lambai)
+            line = i.strip().split()[:N]
+            embed = []
+            for word in line:
+                embedding_vector = np.array(embeddings_index.get(word, embeddings_index.get("#")))
+                embed.append(list(embedding_vector))
+            embedding_matrix.append(embed)
+        InputLines = np.array(embedding_matrix)
         f_label = []
         for label in output_l:
           label = label.strip().split()
@@ -56,34 +65,10 @@ def data_generator(batch_size,inputfile,outputfile,N):
           if lambai2 != N:
             label += [0]*(N-lambai2)
           f_label.append(label)
-        one = [0,1]
-        zero= [1,0]
-        label = []
-        for i in f_label:
-            label.append([zero if not j else one for j in i])
-        labels = np.array(label)
-        for j in input_l:
-            i = j.strip()
-            lambai = len(i.split())
-            if lambai != N:
-                i += " #"*(N-lambai)
-            line = i.strip().split()[:N]
-            #if counter == 1 and inputfile == inputFile:
-            #    print("--orig ", j)
-            #    print("--upda ", i)
-            #    print()
-            embed = []
-            for word in line:
-                embedding_vector = np.array(embeddings_index.get(word, embeddings_index.get("#")))
-                embed.append(list(embedding_vector))
-            lines.append(line)
-            embedding_matrix.append(embed)
-        InputLines = np.array(embedding_matrix)
-        #if counter ==1 and inputfile == inputFile:
-        #    print("input", InputLines.shape)
-        #    print("label", labels.shape)
-        #    for i in range(N):
-        #        print(lines[0][i],"\t\t",InputLines[0][i],"\t\t", labels[0][i])
+        #f_label = [[0,1] if not i else [1,0] for i in f_label]
+        labels = np.array(f_label)
+        #if counter ==1:
+        #    print(labels.shape)
         yield InputLines, labels
 
 def define_model():
@@ -97,32 +82,31 @@ def define_model():
           bias_initializer=b, recurrent_initializer=r, kernel_initializer=k))
       """
       if use_lstm:
-        model.add(LSTM(100, batch_input_shape=(None, N, M),
-            return_sequences=True,use_bias=False))
+        model.add(LSTM(N, batch_input_shape=(None, N, M), return_sequences=False))
       else:
         model.add(Flatten(input_shape=(N,M)))
-      #model.add(Dropout(0.3))
-      model.add(Dense(128, activation='relu',use_bias=False))
-      model.add(Dense(32, activation='relu',use_bias=False))
-      model.add(Dense(2, activation='softmax',use_bias=False))
-      #model.add(Dense(N, activation='sigmoid', kernel_regularizer=regularizers.l2(0.00), activity_regularizer=regularizers.l1(0.01)))
+      model.add(Dense(N, activation='relu'))
+      model.add(Dense(N, activation='sigmoid',
+          kernel_regularizer=regularizers.l2(0.01), activity_regularizer=regularizers.l1(0.01)))
       return model
 
 def main():
     model = define_model()
-    weights = [1,35]
+    weights = {0:125,1:1}
+    for i in range(2,200):
+        weights[i] = 125
     # compile the model
-    adam = optimizers.Adam(lr=1e-04)
-    model.compile(optimizer=adam, loss = 'categorical_crossentropy', metrics=['accuracy'])
+    adam = optimizers.Adam(lr=8e-03)
+    model.compile(optimizer=adam, loss='binary_crossentropy', metrics=['accuracy'])
     # summarize the model
     print(model.summary())
+    exit(0)
     checkpoint = ModelCheckpoint(modelname, monitor='loss', verbose=1, save_best_only=True, mode='min', period=1)
     # fit the model
     training_generator = data_generator(batch_size=64,inputfile=inputFile,
             outputfile=outputLabel, N=N)
     validation_generator = data_generator(batch_size=64,
             inputfile=inputValidationFile, outputfile=outputValidationLabel, N=N)
-    
     history = model.fit_generator(training_generator, validation_data=validation_generator,
             epochs=10, callbacks=[checkpoint],#class_weight = weights,
             verbose=1,steps_per_epoch=9736//64,validation_steps=4868//64)
@@ -130,7 +114,6 @@ def main():
     
    # evaluate the model
     
-    """
     from keras.models import load_model
     train_model = load_model(modelname)
     
@@ -143,7 +126,6 @@ def main():
     plt.plot(history.history['val_loss'])
     plt.legend(['train','validation'])
     plt.show()
-    """
     
 if __name__ == '__main__':
     main()
