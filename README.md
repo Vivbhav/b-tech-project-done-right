@@ -1,14 +1,15 @@
 # Automatic Question Generation
 
 ## Installations and Downloads
-<addr>
+```
 sudo -H pip3 install -r requirements.txt
 sudo apt-get install python3-tk
 python3 -c "import nltk; nltk.download('wordnet')"
 git clone https://github.com/moonlightlane/QG-Net
-SQuAD dataset (instructions provided in QG-Net readme)
-Glove embeddings (https://nlp.stanford.edu/projects/glove)
-</addr>
+```
+* SQuAD dataset (instructions provided in QG-Net readme)
+* Glove embeddings (https://nlp.stanford.edu/projects/glove)
+
 
 ## About software
 	
