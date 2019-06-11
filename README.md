@@ -1,6 +1,6 @@
-#Automatic Question Generation
+# Automatic Question Generation
 
-##Installations and Downloads
+## Installations and Downloads
 <addr>
 sudo -H pip3 install -r requirements.txt
 sudo apt-get install python3-tk
@@ -10,7 +10,7 @@ SQuAD dataset (instructions provided in QG-Net readme)
 Glove embeddings (https://nlp.stanford.edu/projects/glove)
 </addr>
 
-##About software
+## About software
 	
 After all the installations, execute main.py using python3 to get a
 window and by doing as instructed in that window you can test the
@@ -54,7 +54,7 @@ speed up question generation on repeated queries, analysing output,
 using same data for different flow etc. It is recommended to have a
 separate directory to avoid clutter.
 
-##Code Files
+## Code Files
 
 cd codes
 
